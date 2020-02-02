@@ -1,3 +1,4 @@
+
 CREATE TABLE professionCategory(
 	pid int,
     profession VARCHAR(32) DEFAULT 'NONE',
@@ -11,10 +12,10 @@ CREATE TABLE user(
     password VARCHAR(50),
     name VARCHAR(50),
     age int,
-    verficationDoc VARCHAR(1000),
-    pid int,
-    PRIMARY KEY(uid),
-    FOREIGN KEY(pid) REFERENCES ProfessionCategory(pid) ON DELETE SET NULL
+    verficationDoc int,
+    #pid int,
+    PRIMARY KEY(uid)
+    #FOREIGN KEY(pid) REFERENCES ProfessionCategory(pid) ON DELETE SET NULL
 );
 
 CREATE TABLE location(
@@ -107,14 +108,14 @@ DESCRIBE blacklist
 
 
 DROP TABLE professionCategory;
-DROP TABLE user;
-DROP TABLE location;
-DROP TABLE address;
-DROP TABLE favourites;
-DROP TABLE phoneNumber;
-DROP TABLE sosNumber;
-DROP TABLE ratingsAndReviews;
-DROP TABLE employee;
-DROP TABLE complaints;
-DROP TABLE blacklist;
+DROP TABLE user CASCADE;
+DROP TABLE location CASCADE;
+DROP TABLE address CASCADE;
+DROP TABLE favourites CASCADE;
+DROP TABLE phoneNumber CASCADE;
+DROP TABLE sosNumber CASCADE;
+DROP TABLE ratingsAndReviews CASCADE;
+DROP TABLE employee CASCADE;
+DROP TABLE complaints CASCADE;
+DROP TABLE blacklist CASCADE;
 */
