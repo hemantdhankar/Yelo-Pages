@@ -31,7 +31,7 @@ CREATE TABLE address(
     apartment VARCHAR(250),
     lid int,
     addressType VARCHAR(50) DEFAULT 'HOME',
-    PRIMARY KEY(uid, appartment),
+    PRIMARY KEY(uid, apartment),
     FOREIGN KEY(uid) REFERENCES user(uid) ON DELETE CASCADE,
     FOREIGN KEY(lid) REFERENCES location(lid) ON DELETE SET NULL
 );
