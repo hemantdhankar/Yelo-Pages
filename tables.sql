@@ -28,7 +28,7 @@ CREATE TABLE location(
 
 CREATE TABLE address(
     uid int,
-    appartment VARCHAR(250),
+    apartment VARCHAR(250),
     lid int,
     addressType VARCHAR(50) DEFAULT 'HOME',
     PRIMARY KEY(uid, appartment),
