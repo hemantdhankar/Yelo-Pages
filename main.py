@@ -13,9 +13,15 @@
 import mysql.connector
 
 def signup(mycursor):
+	serviceProvider="No"
+	pid=1									#Currently providing pid 1 to service seekers, will update this soon
 	print("1. Signup as Service Provider")
 	print("2. Signup as Service Seeker")
 	choice = int(input())
+	if(choice==1):
+		serviceProvider="yes"
+		print("Enter pid")							#Just for now, will provide options later on.
+		pid=int(input())
 	print("Enter Your Full Name")
 	name = input()
 	print("Enter Username")
@@ -38,8 +44,8 @@ def signup(mycursor):
 	print("Enter Aadhar Number")
 	aadharnumber=int(input())
 
-	query= "INSERT INTO user (username, password, name, age, verficationDoc) VALUES(%s, %s, %s, %s, %s)"
-	values = (username, passwd, name, age, aadharnumber)
+	query= "INSERT INTO user (username, password, name, age, aadharNumber, serviceProvider, pid) VALUES(%s, %s, %s, %s, %s, %s,%s)"
+	values = (username, passwd, name, age, aadharnumber, serviceProvider, pid)
 	mycursor.execute(query, values)
 
 
@@ -48,7 +54,27 @@ def signup(mycursor):
 
 
 
-#def login():
+def login():
+	print("Enter Username")
+	while(True):
+		username=input()
+		query="SELECT * from user where username = '{}'".format(username)
+		mycursor.execute(query)
+		exist=mycursor.fetchall();
+		if(len(exist)==0):
+			print("Incorrect Username. Enter Again")
+		else:
+			print("Enter Password")
+			passwd= input()
+			query= "SELECT name from USER where username = '{}' and password = '{}'".format(username, passwd)
+			mycursor.execute(query)
+			exist=mycursor.fetchall();
+			if(len(exist)==0):
+				print("Incorrect password for the given username. Please try again.")
+				print("Enter Username")
+			else:
+				print("Successfully logged in.\n Hi, {}, Welcomeback to yelopages.".format(exist[0][0]))
+				break;
 
 
 def menu():
@@ -69,9 +95,10 @@ def menu():
 
 if __name__ == '__main__':
 
-	mydb = mysql.connector.connect(host="localhost",
+	mydb = mysql.connector.connect(
+		host="localhost",
 		user="root",				#select the user
-		passwd="")					#Provide the password for your root user or some other user in which you have created the database
+		passwd="He@12345")					#Provide the password for your root user or some other user in which you have created the database
 
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")					#Please keep the name of the database = "yelopages", it will not create confusion on further stages.

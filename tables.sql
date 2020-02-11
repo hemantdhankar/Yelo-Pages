@@ -13,6 +13,7 @@ CREATE TABLE user(
     name VARCHAR(50),
     age int,
     aadharNumber bigint UNIQUE,
+    serviceProvider VARCHAR(5),
     pid int,
     PRIMARY KEY(uid),
     FOREIGN KEY(pid) REFERENCES ProfessionCategory(pid) ON DELETE SET NULL
