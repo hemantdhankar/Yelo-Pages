@@ -4,7 +4,7 @@
 	Check the tables before proceeding.
 	Lines you MUST edit before running this file ---- 73
 	use python main.py to run this file  
-
+	
 """
 
 
@@ -99,6 +99,7 @@ if __name__ == '__main__':
 		host="localhost",
 		user="root",				#select the user
 		passwd="")					#Provide the password for your root user or some other user in which you have created the database
+									#Remember to remove the password before pushing it to the repo
 
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")					#Please keep the name of the database = "yelopages", it will not create confusion on further stages.
