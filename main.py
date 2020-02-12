@@ -98,7 +98,7 @@ if __name__ == '__main__':
 	mydb = mysql.connector.connect(
 		host="localhost",
 		user="root",				#select the user
-		passwd="He@12345")					#Provide the password for your root user or some other user in which you have created the database
+		passwd="")					#Provide the password for your root user or some other user in which you have created the database
 
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")					#Please keep the name of the database = "yelopages", it will not create confusion on further stages.
