@@ -53,7 +53,6 @@ def signup(mycursor):
 
 
 
-
 def login():
 	print("Enter Username")
 	while(True):
