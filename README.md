@@ -5,17 +5,17 @@ It is recomended to run the main-old.py file before you run the server as it wil
 IMPORTANT: Keep the name of your database "yelopages" only.
 
 #Reqirements
-    1. django2
-    2. mysql 
-    3. mysql pip package
-    4. python connector (check if its working fine by runing the main-old.py file before running server)
+1. django2
+2. mysql 
+3. mysql pip package
+4. python connector (check if its working fine by runing the main-old.py file before running server)
     
 
 #Deploying
-    1. Go to the ../Yelopages-project/
-    2. Run command python manage.py runserver   OR  python3 manage.py runserver         (You must use python3 version)
-    3. Site will be hosted at localhost:8000
-    3. Ctrl + c to exit 
+1. Go to the ../Yelopages-project/
+2. Run command python manage.py runserver   OR  python3 manage.py runserver         (You must use python3 version)
+3. Site will be hosted at localhost:8000
+4. Ctrl + c to exit 
     
 Changes you have to do:
 1. If you are running main-old.py file then you will have to provide the database details like user, password, etc. Most probably you'll just have to change the password.
