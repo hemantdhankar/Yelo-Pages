@@ -2,7 +2,7 @@
 	First of all create the database "yelopages" and then run the file tables.sql using the command
 	mysql -u root -p yelopages < tables.sql		, this will create all tables (you will have to run it only once)
 	Check the tables before proceeding.
-	Lines you MUST edit before running this file ---- 73
+	Lines you MUST edit before running this file ---- 100
 	use python main.py to run this file  
 	
 """
