@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row text-white" style="text-align: center; width: 90%; margin:auto;">
+	<div class="col-md-10 bg-dark" style="margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div class="bg-dark" style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto;height: 100%;margin-top: 20px;margin-bottom: 20px;padding: 50px;">
+			<br>
+			<h3>Sign up Successfull!</h3>
+			<hr class="bg-warning" style="border-width: 3px;">
+			<h6> ( Enter your contact details to complete your profile ) </h6>
+			<br><br>
+			<form method="POST">
+				{% csrf_token %}
+				<div class="form-row">
+				    <div style="width: 70px; margin-left: 5px;">
+				    	<input type="text" class="form-control" placeholder="+91" readonly="">
+				    </div>
+				    <div style="width: 38%;margin-left: 5px;">
+				    	<input type="text" maxlength="10" class="form-control" placeholder="Phone Number" name="PhoneNumber" required>
+				    </div>
+			    	<div class="col-md">
+					    <p style="color: rgba(255, 255, 255, 0.7); text-align: left; padding-top:10px; margin: 0;">&emsp;&emsp;&emsp; eg. 987654321</p>	    		
+			    	</div>
+				</div>
+
+			    <datalist id = "localities">
+			    	{% for locality in localities %}
+			    	<option value="{{ locality }}">
+			    	{% endfor %}
+			    </datalist>
+			    <datalist id = "pincodes">
+			    	{% for code in pincodes %}
+			    	<option value="{{ code }}">
+			    	{% endfor %}
+			    </datalist>
+			    <div class="form-row" style="margin-top: 15px;">
+			    	<div class="col">
+					    <input type="text" maxlength="200" class="form-control" name="Apartment" required placeholder="Apartment Number, Block, Street, Society">    		
+			    	</div>
+			    	<div class="col-md">
+					    <p style="color: rgba(255, 255, 255, 0.7); text-align: left; padding-top:10px; margin: 0;">&emsp;&emsp;&emsp;eg. A-103, Block-C, Whitefield</p>	    		
+			    	</div>
+			    </div>
+			    <div class="form-row" style="margin-top: 15px;">
+				    <div class="col">
+					    <input type="text" list="localities" class="form-control" name="Locality[]" required placeholder="Your locality">
+				    </div>
+			    	<div class="col-md">
+					    <p style="color: rgba(255, 255, 255, 0.7); text-align: left; padding-top:10px; margin: 0;">&emsp;&emsp;&emsp;eg. Dwarka Sec 6</p>	    		
+			    	</div>
+			    </div>
+			    <div class="form-row" style="margin-top: 15px;">
+				    <div class="col">
+					    <input type="text" list="pincodes" class="form-control" name="Pincode[]" required placeholder="Pincode">
+				    </div>			    	
+			    	<div class="col-md">
+					    <p style="color: rgba(255, 255, 255, 0.7); text-align: left; padding-top:10px; margin: 0;">&emsp;&emsp;&emsp;eg. 110043</p>	    		
+			    	</div>
+			    </div>
+			    <div class="form-row" style="margin-top: 15px;">			    	
+				    <div style="width: 24%;margin-left: 5px;">
+				    	<input class="form-control" type="text" placeholder="New Delhi" readonly>	
+				    </div>
+				    <div style="width: 24%;">
+				    	<input class="form-control" type="text" placeholder="India" readonly style="margin-left: 5px;">	
+				    </div>
+			    	<div class="col-md">
+					    <p style="color: rgba(255, 255, 255, 0.7); text-align: left; padding-top:10px; margin-left: 10px;">&emsp;&emsp;&emsp;We are currently available here only</p>	    		
+			    	</div>
+			    </div>
+			    <br>
+		     	<button type="submit" class="btn btn-warning border-dark" style="margin-top: 15px;"><b>Save & Continue</b></button>
+	   		</form>			
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -34,20 +35,26 @@
 				  <li class="nav-item">
 					<a class="nav-link" href="#" tabindex="-1" aria-disabled="true">Team</a>
 				  </li>
+				  {% if user.Username %}
+					  <li class="nav-item active" style="border: 2px solid #ffc107; border-radius: 8px; height: 35px; margin-top: 2px;margin-left: 20px;">
+						<a class="nav-link" href="http://localhost:8000/profile/" style="padding-top:3px;padding-bottom: 3px;">Hi {{ user.Username }}! </a>
+					  </li>				  
+				  {% endif %}
 				</ul>
 			  </div>
 			</nav>
 
 		
+		<div style="background-image:linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)), url({% static 'Resources/img/cover1.jpg' %}); background-size: cover;background-position: center;background-attachment: fixed; min-height: 100vh">
+			<div class="container" style="padding-top: 56px; padding-bottom: 50px;">
 
-		<div class="container" style="padding-top: 56px; margin-bottom: 50px;">
+			  {% block content %}
+			  {% endblock %}
 
-		  {% block content %}
-		  {% endblock %}
-
+			</div>			
 		</div>
 
-		<footer class="footer mt-auto py-3 bg-light" style="margin-top: 30px;">
+		<footer class="footer mt-auto py-3 bg-dark" style="margin-top: 30px;">
 			<div class="container text-center">
 				<span class="text-muted">Copyright &copy; 2020 by YeloPages. All rights reserved.</span>
 			</div>

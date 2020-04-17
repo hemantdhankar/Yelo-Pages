@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}		
-		
+{% load staticfiles %}
 <div class="row h-100" style="margin-top: 30px;">
-	<div class="col-md-6 bg-light text-black">
-		<div style="top: 40%;position: absolute;">
-			<h1>LOGO</h1>
-			<br>
-			<h2>Tagline will go here.</h2>			
+	<div class="col-md-6 text-black" style="border-radius: 20px; border: solid 3px rgb(0,0,0);">
+		<div style="top: 25%; left: 20%; position: absolute; text-align: center;">
+			<img src="{% static 'Resources/img/logo.png'%}" style="width: 230px;">
+			<br><br>
+			<h2>Services on your Screen</h2>			
 		</div>
 	</div>
 	<div class="col-md-6">
-		<div class="col bg-dark text-white" style="border-radius: 20px;padding: 15px;">
-			<h5>Log in to Continue</h5><br>
+		<div class="col bg-dark text-white" style="border-radius: 20px;padding: 20px;box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+			<h5>Log in to Continue</h5>
+			<hr class="bg-warning" style="border-width: 2px;">
 			<form method="POST">
 				{% csrf_token %}
 			  <div class="form-group">
@@ -24,37 +25,37 @@
 			  {{ error }}
 			  <br>
 			  {% endif %}
-			  <br>
 			  <button type="submit" name="Sign_In" class="btn btn-warning border-dark">Sign In</button>
 			</form>
 		</div>
 		<br>
-		<div class="col bg bg-light" style="border-radius: 20px;padding: 15px;">
-			<h5>Dot't have an account? Sign Up Now.</h5><br>
+		<div class="col bg-light" style="border-radius: 20px;padding: 20px;box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+			<h5>Dot't have an account? Sign Up Now.</h5>
+			<hr class="bg-dark" style="border-width: 2px;">
 			<form method="POST">
 				{% csrf_token %}
 				<div class="form-group">
-				    <input type="text" class="form-control" name="Name" placeholder="Your Full Name" required>
+				    <input type="text" class="form-control" name="Name" {% if sname %} value = {{ sname }} {% endif %} placeholder="Your Full Name" required>
 				</div>
 				<div class="form-row">
-				<div class="col">
-				<input type="text" class="form-control" placeholder="Username" name="Username" required>
-				</div>
-				  {% if usernameerror %}
-				  <p style="color: red; font-size: 10px;margin-top: 20px;">{{ usernameerror }}</p>
-				  {% endif %}			  		
-				<div class="col">
-				<input type="password" class="form-control" placeholder="Password" name="Password" required>
-				</div>
+					<div class="col">
+						<input type="text" class="form-control" {% if susername %} value = {{ susername }} {% endif %} placeholder="Username" name="Username" required>
+					</div>
+					  {% if usernameerror %}
+					  <p style="color: red; font-size: 10px;margin-top: 20px;">{{ usernameerror }}</p>
+					  {% endif %}			  		
+					<div class="col">
+						<input type="password" class="form-control" placeholder="Password" name="Password" required>
+					</div>
 				</div>
 				<br>
 				<div class="form-row">
-				<div class="col-3">
-				<input type="number" class="form-control" placeholder="Age" name="Age" required>
-				</div>
-				<div class="col">
-				<input type="text" class="form-control" placeholder="Enter your 12 digits Aadhar Number" minlength="12" maxlength="12" name="Aadhar" required>
-				</div>
+					<div class="col-3">
+						<input type="number" class="form-control" {% if sage %} value = {{ sage }} {% endif %} placeholder="Age" name="Age" required>
+					</div>
+					<div class="col">
+						<input type="text" class="form-control" {% if saadhar %} value = {{ saadhar }} {% endif %} placeholder="Enter your 12 digits Aadhar Number" minlength="12" maxlength="12" name="Aadhar" required>
+					</div>
 				</div>
 				<br>
 				<div class="form-check">
@@ -63,9 +64,9 @@
 				   		Do you provide any service?
 				  </label>
 				</div>
-				<div class="rofession_dropdown" id = "profession_dropdown" style="display:none;">
+				<div class="profession_dropdown" id = "profession_dropdown" style="display:none;">
 					<br>
-				  <select class="custom-select mr-sm-2 bg-light text-black form-control w-50" name="Profession">
+				  <select class="custom-select mr-sm-2 text-black form-control w-50" name="Profession">
 				    <option selected value = "nil" >Choose Profession</option>				  	
 				    <option value = "Baby Sitter" >Baby Sitter</option>
 				    <option value = "Carpenter">Carpenter</option>

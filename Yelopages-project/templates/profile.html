@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+
+<div class="row text-white" style="text-align: center; width: 90%; margin:auto;">
+	<div class="col-md-12" style="background-color: rgba(248, 249, 250, 0.85); margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto; height: 100%; margin-top: 20px; margin-bottom: 20px;padding: 50px;">
+			<img src="{% static 'Resources/img/user1.webp'%}" height="150px;">
+			<br><br>
+			{% for key, value in user.items %}
+				<div class="row" style="background-color: rgba(52, 58, 64, 0.9); border-radius: 20px; padding:15px;">
+					<div class="col-md">
+						<h5 style="margin-bottom: 0; padding: 5px;">{{ key }}</h5>
+					</div>
+					<div class="col-md" style="background-color: rgba(255, 193, 7,0.95);border: 3px solid #fff; color: #000; border-radius: 20px; padding:5px;">
+						<h6 style="margin-bottom: 0; padding: 5px;">{{ value }}</h6>
+													
+					</div>
+				</div>
+				<br>
+			{% endfor %}
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -13,3 +13,7 @@ $(".dropdown-menu a").click(function(){
   console.log("HI");
   $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
 });
+
+// warning rgba(255, 193, 7, 0.3)
+//light rgba(248, 249, 250, 1)
+//dark rgba(52, 58, 64, 1)
