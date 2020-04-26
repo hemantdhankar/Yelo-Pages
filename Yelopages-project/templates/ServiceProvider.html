@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+
+<div class="row text-white" style="text-align: center; width: 90%; margin:auto;">
+	<div class="col-md-12" style="background-color: rgba(248, 249, 250, 0.85); margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto; height: 100%; margin-top: 20px; margin-bottom: 20px;padding: 50px;">
+					<img src="{% static 'Resources/img/user1.webp'%}" height="150px;">
+					<br><br>
+
+			<div class="row">
+				<div class="col-md">
+					{% for key, value in spuser.items %}
+						{% if key not in exceptions %}
+							<div class="row" style="background-color: rgba(52, 58, 64, 0.9); border-radius: 20px; padding:15px;">
+								<div class="col-md">
+									<h5 style="margin-bottom: 0; padding: 5px;">{{ key }}</h5>
+								</div>
+								<div class="col-md" style="background-color: rgba(255, 193, 7,0.95);border: 3px solid #fff; color: #000; border-radius: 20px; padding:5px;">
+									<h6 style="margin-bottom: 0; padding: 5px;">{{ value }}</h6>
+																
+								</div>
+							</div>
+							<br>
+						{% endif %}
+					{% endfor %}
+						<br>				
+				</div>
+				<div class="col-md" style="padding: 40px;">
+					<h4 style="color: black;"> Average Rating</h4>
+					<br>
+					<div class="row" style=" width: 80%;margin:auto;background-color: rgba(52, 58, 64, 0.9); border-radius: 20px; padding:15px;">
+						<div class="col-md" style="background-color: rgba(255, 193, 7,0.95);border: 3px solid #fff; color: #000; border-radius: 20px; padding:5px;">
+							{% if spuser.Rating == -1 %}
+							<h6 style="margin-bottom: 0; padding: 5px;">Not Rated</h6>
+							{% else %}
+							<h6 style="margin-bottom: 0; padding: 5px;">{{spuser.Rating}} stars</h6>
+							{% endif %}
+						</div>
+					</div>
+					<br>
+					<h4 style="color: black;">Reviews</h4>
+					{% if reviews %}
+						{% for record in reviews %}
+							<div class="card text-white mb-3 bg-dark" style="margin-left: auto;margin-right: auto; max-width: 18rem; border-radius: 10px;padding: 0;">
+							  	<div class="card-header"><h6>{{ record.0 }}</h6></div>
+							 	<div class="card-body" style="background-color: rgba(248, 249, 240, 1);border-left:10px solid rgba(52, 58, 64, 0.9);border-right:10px solid rgba(52, 58, 64, 0.9);color: black; border-radius: 10px;">
+								    <i><h6 class="card-text">"{{ record.2 }}"</h6></i>
+								</div>	
+								<div class="card-footer">
+							    	<h6 class="card-title">{{ record.1 }} stars</h6>
+								</div>				
+							</div>
+						{% endfor %}
+					{% else %}
+							<div class="card text-white mb-3 bg-dark" style="margin-left: auto;margin-right: auto; max-width: 18rem; border-radius: 10px;padding: 0;">
+									No Reviews
+							</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row text-white" style="text-align: center; width: 90%; margin:auto;">
+	<div class="col-md-10 bg-dark" style="margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div class="bg-dark" style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto;height: 100%;margin-top: 20px;margin-bottom: 20px;padding: 50px;">
+			{% if check %}
+				<h5>Thanks for sharing your review!</h5>
+				<h6>It will help others to get best services.</h6>
+			{% else %}
+				<h5>Share your experience with this service provider</h5>
+				<hr class="bg-warning" style="margin-top: 40px; border-width: 3px;">
+				<form method="POST">
+					{% csrf_token %}
+					<div style="padding: 5px 20px 5px 20px; width: 200px;">
+						<select class="custom-select mr-sm-2 text-black form-control" name="Rating">
+							    <option selected value = "All" >Rating</option>				  	
+							    <option value = "1">1</option>
+							    <option value = "2">2</option>
+							    <option value = "3">3</option>
+							    <option value = "4">4</option>
+							    <option value = "5">5</option>
+						</select>	
+					</div>
+					<br>
+					<div style="margin-left: 20px;">
+					    <textarea class="form-control" name="Review" id="exampleFormControlTextarea1" placeholder="Write a Breif review..." rows="3"></textarea>
+					</div>
+			     	<button type="submit" class="btn btn-warning border-dark" style="margin-top: 15px;"><b>Submit</b></button>
+				</form>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

@@ -25,4 +25,5 @@ urlpatterns = [
     path('search/', views.search, name = "search"),
     path('profile/', views.profile, name = "profile"),   
     path('completeprofile/', views.completeprofile, name="completeprofile"),
+    path('serviceprovider/<int:spid>/', views.serviceprovider, name="serviceprovider"),
 ]

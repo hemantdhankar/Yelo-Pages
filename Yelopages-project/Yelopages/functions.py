@@ -1,7 +1,7 @@
 import mysql.connector
 
 class User:
-  def __init__(self, uid, name, username, age, aadhar, serviceProvider, phoneNumber, profession, domain,  apartment, locality, pincode):
+  def __init__(self, uid, name, username, age, aadhar, serviceProvider, phoneNumber, profession, domain,  apartment, locality, pincode, rating):
     self.Uid = uid
     self.Name = name
     self.Username = username
@@ -14,8 +14,9 @@ class User:
     self.Apartment = apartment
     self.Locality = locality
     self.Pincode = pincode
+    self.Rating = rating
   def __str__(self):
-  	return "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" %(self.Uid, self.Name, self.Username, self.Age, self.Aadhar, self.ServiceProvider, self.PhoneNumber, self.Profession, self.Domain, self.Apartment, self.Locality, self.Pincode)
+  	return "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" %(self.Uid, self.Name, self.Username, self.Age, self.Aadhar, self.ServiceProvider, self.PhoneNumber, self.Profession, self.Domain, self.Apartment, self.Locality, self.Pincode, self.Rating)
 
 def setupdb():
 	mydb = mysql.connector.connect(
@@ -28,28 +29,39 @@ def getPhoneNumbers(uid):
 	mydb = setupdb()
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")
-
 	query = "SELECT phoneNumber from phonenumber where uid = '{}'".format(uid)
 	mycursor.execute(query)
 	numbers = mycursor.fetchall()
 	if(len(numbers)!=0):
 		return numbers[0][0]
 	else:
+		return "Not Available"
+
+def getAverageRating(uid):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopages")
+	query = "SELECT avg(rating) from ratingsandreviews where uidSP='{}'".format(uid)
+	mycursor.execute(query)
+	rating = mycursor.fetchall()
+	if(rating[0][0]):
+		return int(rating[0][0])
+	else:
 		return -1
 
-def getUserObject(username):
+def getUserObject(uid):
 	mydb = setupdb()
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")
 
-	query = "SELECT * from user where username = '{}'".format(username)
+	query = "SELECT * from user where uid = '{}'".format(uid)
 	mycursor.execute(query)
-	userrecord = mycursor.fetchall();
-	uid = userrecord[0][0]
+	userrecord = mycursor.fetchall()
+	averagerating = getAverageRating(uid)
 	phone = getPhoneNumbers(uid)
 	query = "SELECT * from address where uid = '{}'".format(uid)
 	mycursor.execute(query)
-	address = mycursor.fetchall();
+	address = mycursor.fetchall()
 	if(len(address)==0):
 		lid = None
 		apartment = None
@@ -60,7 +72,7 @@ def getUserObject(username):
 	if(lid):
 		query = "SELECT locality, pin from location where lid = '{}'".format(lid)
 		mycursor.execute(query)
-		location = mycursor.fetchall();
+		location = mycursor.fetchall()
 		locality = location[0][0]
 		pincode = location[0][1]
 	else:
@@ -70,32 +82,33 @@ def getUserObject(username):
 	pid = userrecord[0][7]
 	query = "SELECT profession, domain from professioncategory where pid = '{}'".format(pid)
 	mycursor.execute(query)
-	service = mycursor.fetchall();
+	service = mycursor.fetchall()
 	profession = service[0][0]
 	domain = service[0][1]
 
-	user = User(uid, userrecord[0][3], userrecord[0][1], userrecord[0][4], userrecord[0][5], userrecord[0][6], phone, profession, domain, apartment, locality, pincode)
+	user = User(uid, userrecord[0][3], userrecord[0][1], userrecord[0][4], userrecord[0][5], userrecord[0][6], phone, profession, domain, apartment, locality, pincode, averagerating)
 	#print("yes",user)
 	return user.__dict__
 
 #[(103, 'myjhonson', 'lol123', 'jhonson', 22, 489293018492, 'No', 1, None, '0')]
 
-def getserviceproviders(profession = None, locality = None, pincode = None):
+def getserviceproviders(profession = None, locality = None, pincode = None, rating = None, sorting = None):
 	print(profession)
 	print(locality)
 	print(pincode)
+	print(sorting)
 	mydb = setupdb()
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopages")
 	serviceproviders = []
-	query = "SELECT username from user where serviceProvider = 'yes'"
+	query = "SELECT uid from user where serviceProvider = 'yes'"
 	mycursor.execute(query)
-	spusernames = mycursor.fetchall();
-	print(spusernames)
-	for i in range(len(spusernames)):
-		spobject = getUserObject(spusernames[i][0])
+	spuids = mycursor.fetchall()
+	print(spuids)
+	for i in range(len(spuids)):
+		spobject = getUserObject(spuids[i][0])
 		serviceproviders.append(spobject)
-	print(serviceproviders)
+	#print(serviceproviders)
 	print(len(serviceproviders))
 	rmvind = []
 	if(profession):
@@ -116,17 +129,27 @@ def getserviceproviders(profession = None, locality = None, pincode = None):
 			print(serviceproviders[i]['Pincode'])
 			if(serviceproviders[i]['Pincode'] != int(pincode)):
 				rmvind.append(serviceproviders[i]['Uid'])
+
+	if(rating):
+		for i in range(len(serviceproviders)):
+			if(int(serviceproviders[i]['Rating']) < int(rating)):
+				rmvind.append(serviceproviders[i]['Uid'])
+
 	
 	print(rmvind)
 	finalsplist = []
 	for i in serviceproviders:
 		if(i['Uid'] not in rmvind):
-			print("kya")
 			finalsplist.append(i)
 
-	print("fp:",finalsplist)
-	return(finalsplist)
+	#print("fp:",finalsplist)
 
+	if(sorting):
+		if(sorting == 'Rating'):
+			finalsplist.sort(reverse=True,key=lambda x: x['Rating'])
+		else:
+			finalsplist.sort(key=lambda x: x['Name'])
+	return(finalsplist)
 
 
 	"""
@@ -149,6 +172,15 @@ def getserviceproviders(profession = None, locality = None, pincode = None):
 	{'Uid': 132, 'Name': 'simar jeet', 'Username': 'simmi', 'Age': 32, 'Aadhar': 838748374834, 'ServiceProvider': 'yes', 'PhoneNumber': -1, 'Profession': 'Plumber', 'Domain': 'Domestic Help', 'Apartment': None, 'Locality': None, 'Pincode': None}
 	"""
 
+def getName(uid):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopages")
+	query = "SELECT name from user where uid = '{}'".format(uid)
+	mycursor.execute(query)
+	name = mycursor.fetchall()
+	return name[0][0]
+
 
 def getpid(profession):
 	pidlist = {'Cook':1,'Plumber':2,'Electrician':3,'House Cleaner':4,'Carpenter':5,'Painter':6,'Gardener':7,'Driver':8,'Pool Cleaner':9,'Guard':10,'Delivery Person':11,'Vegetable Seller':12,'Baby Sitter':13,'Pet Keeper':14,'Party Decorator':15,'Tutor':16,'Dentist':17,'ENT':18,'Washer':19,'Dry Cleaner':20}
@@ -161,7 +193,7 @@ def getuid(username):
 	mycursor.execute("USE yelopages")
 	query = "SELECT uid from user where username = '{}'".format(username)
 	mycursor.execute(query)
-	uid = mycursor.fetchall();
+	uid = mycursor.fetchall()
 	return uid[0][0]
 
 def getlid(locality, pincode):
@@ -170,8 +202,24 @@ def getlid(locality, pincode):
 	mycursor.execute("USE yelopages")
 	query = "SELECT lid from location where locality = '{}' and pin = '{}'".format(locality, pincode)
 	mycursor.execute(query)
-	lid = mycursor.fetchall();
+	lid = mycursor.fetchall()
 	return lid[0][0]
+
+def getRatingsAndReviews(uid):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopages")
+	query = "SELECT * from ratingsandreviews where uidsp = '{}';".format(uid)
+	mycursor.execute(query)
+	reviews = mycursor.fetchall()
+	finalreviewlist = []
+	for i in reviews:
+		serviceseeker = getName(i[0])
+		finalreviewlist.append([serviceseeker, i[2], i[3]])
+	if(len(finalreviewlist)==0):
+		return None
+	else:
+		return finalreviewlist
 
 def check_username(username):
 	mydb = setupdb()
@@ -179,7 +227,7 @@ def check_username(username):
 	mycursor.execute("USE yelopages")
 	query="SELECT * from user where username = '{}'".format(username)
 	mycursor.execute(query)
-	exist=mycursor.fetchall();
+	exist=mycursor.fetchall()
 	if(len(exist)==0):
 		return True
 	else:
@@ -191,7 +239,7 @@ def login(username, password):
 	mycursor.execute("USE yelopages")
 	query= "SELECT name from USER where username = '{}' and password = '{}'".format(username, password)
 	mycursor.execute(query)
-	exist=mycursor.fetchall();
+	exist=mycursor.fetchall()
 	if(len(exist)==0):
 		return False
 	else:
@@ -231,3 +279,14 @@ def completeProfile(username, phone, apartment, locality, pincode):
 	mycursor.execute(query)
 	mydb.commit()
 	print("Profile completed!")
+
+def giveReview(uidss, uidsp, rating, review):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopages")
+	query = "INSERT INTO ratingsandreviews (uidSS, uidSP, rating, review) VALUES(%s, %s, %s, %s)"
+	values = (uidss, uidsp, rating, review)
+	mycursor.execute(query, values)
+	mydb.commit()
+	print("review added")
+	return 1
