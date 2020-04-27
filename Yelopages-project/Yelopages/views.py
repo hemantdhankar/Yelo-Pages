@@ -97,18 +97,40 @@ def profile(request):
 	return render(request, "profile.html", {'user': request.session['user'], 'rating': rating})
 
 
+def favorites(request):
+	if(request.method == 'POST'):
+		spid = request.POST['spid']
+		return redirect('/serviceprovider/'+spid)
+	else:
+		favorites = getFavorites(request.session['user']['Uid'])
+		return render(request, "favorites.html", {'user' :request.session['user'],'favorites':favorites})
+
 def serviceprovider(request, spid):
 	if(request.method=='POST'):
-		rating = request.POST['Rating']
-		review = request.POST['Review']
-		check = giveReview(request.session['user']['Uid'], spid, rating, review)
-		spuser = getUserObject(spid)
-		reviews = getRatingsAndReviews(spid)
-		return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'check':check})
+		if 'addfavorite' in request.POST:
+			addFavorite(request.session['user']['Uid'], spid)
+			spuser = getUserObject(spid)
+			reviews = getRatingsAndReviews(spid)
+			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'favorite':True})
+		elif 'removefavorite' in request.POST:
+			removeFavorite(request.session['user']['Uid'], spid)
+			spuser = getUserObject(spid)
+			reviews = getRatingsAndReviews(spid)
+			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'favorite':False})
+		elif 'review' in request.POST:
+			rating = request.POST['Rating']
+			review = request.POST['Review']
+			check = giveReview(request.session['user']['Uid'], spid, rating, review)
+			spuser = getUserObject(spid)
+			reviews = getRatingsAndReviews(spid)
+			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'check':check})
 	else:
 		spuser = getUserObject(spid)
+		print(spuser)
 		reviews = getRatingsAndReviews(spid)
 		print(reviews)
-		return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews})
+		rating = getAverageRating(spid)
+		favorite = isFavorite(request.session['user']['Uid'], spid)
+		return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'favorite':favorite, 'rating':rating})
 
 #[18:11, 4/18/2020] IIITD Sonali Singhal CSD: Name profession  phonenumber rating Location

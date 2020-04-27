@@ -8,6 +8,7 @@
 			<img src="{% static 'Resources/img/user1.webp'%}" height="150px;">
 			<br><br>
 			{% for key, value in user.items %}
+				{% if value != 'None' %}
 				<div class="row" style="background-color: rgba(52, 58, 64, 0.9); border-radius: 20px; padding:15px;">
 					<div class="col-md">
 						<h5 style="margin-bottom: 0; padding: 5px;">{{ key }}</h5>
@@ -18,11 +19,41 @@
 					</div>
 				</div>
 				<br>
+				{% endif %}
 			{% endfor %}
 				<br>
 
 		</div>
 	</div>
 </div>
+<div class="row text-white" style="text-align: center; width: 100%; margin:auto;">
+	<div class="col-md-10 bg-dark" style="margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div class="bg-dark" style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto;height: 100%;margin-top: 20px;margin-bottom: 20px;padding: 50px;">
+			{% if check %}
+				<h5>Thanks for sharing your review!</h5>
+				<h6>It will help others to get best services.</h6>
+			{% else %}
+				<h4>Enters emails of your emergency contacts</h4>
+				<h6>(We will send alert to all of them if you send a SOS)</h6>
+				<hr class="bg-warning" style="margin-top: 40px; border-width: 3px;">
+				<form method="POST">
+					{% csrf_token %}
+					<div style="padding: 5px 20px 5px 20px; width: 200px;">
+						<input type="email" name="Email1" placeholder="Email id of contact 1">
+					</div>
+					<div style="padding: 5px 20px 5px 20px; width: 200px;">
+						<input type="email" name="Email2" placeholder="Email id of contact 2">
+					</div>
+					<div style="padding: 5px 20px 5px 20px; width: 200px;">
+						<input type="email" name="Email3" placeholder="Email id of contact 3">
+					</div>
+					<br>
+			     	<button type="submit" name="review" class="btn btn-warning border-dark" style="margin-top: 15px;"><b>Save</b></button>
+				</form>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
 
 {% endblock %}

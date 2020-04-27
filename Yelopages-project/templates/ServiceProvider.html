@@ -31,10 +31,10 @@
 					<br>
 					<div class="row" style=" width: 80%;margin:auto;background-color: rgba(52, 58, 64, 0.9); border-radius: 20px; padding:15px;">
 						<div class="col-md" style="background-color: rgba(255, 193, 7,0.95);border: 3px solid #fff; color: #000; border-radius: 20px; padding:5px;">
-							{% if spuser.Rating == -1 %}
+							{% if spuser.Rating == 'Not Rated' %}
 							<h6 style="margin-bottom: 0; padding: 5px;">Not Rated</h6>
 							{% else %}
-							<h6 style="margin-bottom: 0; padding: 5px;">{{spuser.Rating}} stars</h6>
+							<h6 style="margin-bottom: 0; padding: 5px;">{{rating}} stars</h6>
 							{% endif %}
 						</div>
 					</div>
@@ -42,14 +42,11 @@
 					<h4 style="color: black;">Reviews</h4>
 					{% if reviews %}
 						{% for record in reviews %}
-							<div class="card text-white mb-3 bg-dark" style="margin-left: auto;margin-right: auto; max-width: 18rem; border-radius: 10px;padding: 0;">
-							  	<div class="card-header"><h6>{{ record.0 }}</h6></div>
-							 	<div class="card-body" style="background-color: rgba(248, 249, 240, 1);border-left:10px solid rgba(52, 58, 64, 0.9);border-right:10px solid rgba(52, 58, 64, 0.9);color: black; border-radius: 10px;">
+							<div class="card text-white mb-3 bg-dark" style="margin-left: auto;margin-right: auto; max-width: 18rem; border-radius: 10px;padding: 0; box-shadow: 5px 7px rgba(0, 0, 0, 0.06);">
+							  	<div class="card-header"><h6>{{ record.0 }}&ensp;({{ record.1 }} stars)</h6></div>
+							 	<div class="card-body" style="background-color: rgba(248, 249, 240, 1);border-left:10px solid rgba(52, 58, 64, 1);border-right:10px solid rgba(52, 58, 64, 1);color: black; border-radius: 15px;">
 								    <i><h6 class="card-text">"{{ record.2 }}"</h6></i>
 								</div>	
-								<div class="card-footer">
-							    	<h6 class="card-title">{{ record.1 }} stars</h6>
-								</div>				
 							</div>
 						{% endfor %}
 					{% else %}
@@ -63,7 +60,20 @@
 	</div>
 </div>
 
-<div class="row text-white" style="text-align: center; width: 90%; margin:auto;">
+<form method="POST">
+{% csrf_token %}
+	<div class="row text-white" style="text-align: center; width: 100%;margin-top: 30px; margin-bottom: 30px;">
+		{% if favorite %}
+			<button type="submit" name = "removefavorite" class="btn btn-dark border-dark" style="border: 3px solid #fff; padding: 10px; width: 30%; margin-top: 15px; margin-left: auto;margin-right: auto;"><h5>Remove from Favorites &#10084;</h5></button>
+		{% else %}
+			<button type="submit" name = "addfavorite" class="btn btn-dark border-dark" style="border: 3px solid #fff; padding: 10px; width: 30%; margin-top: 15px; margin-left: auto;margin-right: auto;"><h5>Add to Favorites &#10084;</h5></button>
+		{% endif %}
+	</div>	
+</form>
+
+
+
+<div class="row text-white" style="text-align: center; width: 100%; margin:auto;">
 	<div class="col-md-10 bg-dark" style="margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
 		<div class="bg-dark" style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto;height: 100%;margin-top: 20px;margin-bottom: 20px;padding: 50px;">
 			{% if check %}
@@ -77,6 +87,7 @@
 					<div style="padding: 5px 20px 5px 20px; width: 200px;">
 						<select class="custom-select mr-sm-2 text-black form-control" name="Rating">
 							    <option selected value = "All" >Rating</option>				  	
+							    <option value = "0">0</option>
 							    <option value = "1">1</option>
 							    <option value = "2">2</option>
 							    <option value = "3">3</option>
@@ -88,7 +99,7 @@
 					<div style="margin-left: 20px;">
 					    <textarea class="form-control" name="Review" id="exampleFormControlTextarea1" placeholder="Write a Breif review..." rows="3"></textarea>
 					</div>
-			     	<button type="submit" class="btn btn-warning border-dark" style="margin-top: 15px;"><b>Submit</b></button>
+			     	<button type="submit" name="review" class="btn btn-warning border-dark" style="margin-top: 15px;"><b>Submit</b></button>
 				</form>
 			{% endif %}
 		</div>
