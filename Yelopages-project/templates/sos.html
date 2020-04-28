@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row text-white" style="text-align: center; width: 100%; margin:auto;">
+	<div class="col-md-10 bg-dark" style="margin-top: 30px;margin-left: auto; margin-right: auto;height: 100%;border-radius: 20px; box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
+		<div class="bg-dark" style="border-radius: 20px;border: 3px solid #ffc107;margin-left: auto; margin-right: auto;height: 100%;margin-top: 20px;margin-bottom: 20px;padding: 50px;">
+			{% if message %}
+				<h5>You did not saved any emails for emergency contacts. But dont worry our customercare executive will get in touch with you to ensure your safety.</h5>
+			{% else %}
+				<h2> SOS Emails have been sent to these address</h2>
+				{% for emailid in emails %}
+					<h6>{{ emailid }}</h6><br>
+				{% endfor %}
+			{% endif %}
+			<br>
+			<h3 class="bg-warning" style="border-radius: 10px; color: black;"> CALL 100 FOR POLICE HELP. </h3>
+		</div>
+	</div>
+</div>
+{% endblock %}

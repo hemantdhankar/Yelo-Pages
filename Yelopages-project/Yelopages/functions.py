@@ -1,4 +1,12 @@
 import mysql.connector
+import requests
+import smtplib, os, sys
+from pathlib import Path
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
+from html.parser import HTMLParser
 
 class User:
   def __init__(self, uid, name, username, age, aadhar, serviceProvider, phoneNumber, profession, domain,  apartment, locality, pincode):
@@ -43,10 +51,10 @@ def getAverageRating(uid):
 	query = "SELECT avg(rating) from ratingsandreviews where uidSP='{}'".format(uid)
 	mycursor.execute(query)
 	rating = mycursor.fetchall()
-	if(rating[0][0]):
-		return rating[0][0]
+	if(rating[0][0] and rating[0][0]>=0):
+		return round(rating[0][0],2)
 	else:
-		return "Not Rated"
+		return -1
 
 def getUserObject(uid):
 	mydb = setupdb()
@@ -119,6 +127,27 @@ def isLocated(uid, locality):
 		return 0
 """
 
+def submitComplaint(uidss, uidsp, complaint):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopagesyat")
+	query = "SELECT eid from employee WHERE availability = 'Available'"
+	mycursor.execute(query)
+	avaleids = mycursor.fetchall()
+	if(avaleids):
+		eid = avaleids[0][0]
+	else:
+		eid = 1
+	query = "UPDATE employee set availability = 'Not Available' WHERE eid = {}".format(eid)
+	mycursor.execute(query)
+
+	query = "INSERT INTO complaints(uidSS, uidSP, complaint, eid) values(%s,%s,%s,%s)"
+	values = (uidss, uidsp, complaint, eid)
+	mycursor.execute(query, values)
+	mydb.commit()
+	print("reported")
+
+
 def getserviceproviders(profession = None, locality = None, pincode = None, rating = None, sorting = None):
 	print(profession)
 	print(locality)
@@ -143,7 +172,9 @@ def getserviceproviders(profession = None, locality = None, pincode = None, rati
 	if(profession):
 		print("yo")
 		for i in range(len(serviceproviders)):
+			print(serviceproviders[i]['Profession'], end = ':')
 			if(serviceproviders[i]['Profession'] != profession and serviceproviders[i]['Domain'] != profession):
+				print("yes")
 				rmvind.append(serviceproviders[i]['Uid'])
 
 	if(locality):
@@ -158,11 +189,12 @@ def getserviceproviders(profession = None, locality = None, pincode = None, rati
 			print(serviceproviders[i]['Pincode'])
 			if(serviceproviders[i]['Pincode'] != int(pincode)):
 				rmvind.append(serviceproviders[i]['Uid'])
-
+	print(rmvind)
 	if(rating):
+		print("filetes = ", rating)
 		for i in range(len(serviceproviders)):
-			print(serviceproviders[i]['Rating'])
-			if(sprating == 'Not Rated' or int(serviceproviders[i]['Rating']) < int(rating)):
+			#print(serviceproviders[i]['Rating'])
+			if(serviceproviders[i]['Rating'] == -1 or int(serviceproviders[i]['Rating']) < int(rating)):
 				rmvind.append(serviceproviders[i]['Uid'])
 
 	
@@ -172,7 +204,7 @@ def getserviceproviders(profession = None, locality = None, pincode = None, rati
 		if(i['Uid'] not in rmvind):
 			finalsplist.append(i)
 
-	print("fp:",finalsplist)
+	#print("fp:",finalsplist)
 	print(len(finalsplist))
 	if(sorting):
 		if(sorting == 'Rating'):
@@ -216,6 +248,34 @@ def getpid(profession):
 	pidlist = {'Cook':1,'Plumber':2,'Electrician':3,'House Cleaner':4,'Carpenter':5,'Painter':6,'Gardener':7,'Driver':8,'Pool Cleaner':9,'Guard':10,'Delivery Person':11,'Vegetable Seller':12,'Baby Sitter':13,'Pet Keeper':14,'Party Decorator':15,'Tutor':16,'Dentist':17,'ENT':18,'Washer':19,'Dry Cleaner':20}
 	pid = pidlist[profession]
 	return pid
+
+def addSOS(uid, email):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopagesyat")
+	query = "SELECT * from sosemailid WHERE uid = '{}' and emailID = '{}'".format(uid, email)
+	mycursor.execute(query)
+	exist = mycursor.fetchall()
+	if(exist):
+		return
+	else:
+		query = "INSERT INTO sosemailid (uid, emailID) VALUES(%s, %s)"
+		values = (uid, email)
+		mycursor.execute(query, values)
+		mydb.commit()
+		print("email added")
+
+def getSOSEmails(uid):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopagesyat")
+	query = "SELECT emailID from sosemailid WHERE uid = '{}'".format(uid)
+	mycursor.execute(query)
+	email = mycursor.fetchall()
+	emailids = []
+	for i in email:
+		emailids.append(i[0])
+	return emailids
 
 def getuid(username):
 	mydb = setupdb()
@@ -314,6 +374,11 @@ def giveReview(uidss, uidsp, rating, review):
 	mydb = setupdb()
 	mycursor= mydb.cursor()
 	mycursor.execute("USE yelopagesyat")
+	query = "SELECT * from ratingsandreviews WHERE uidSS = {} and uidSP = {}".format(uidss, uidsp)
+	mycursor.execute(query)
+	exist = mycursor.fetchall()
+	if(exist):
+		return -1
 	query = "INSERT INTO ratingsandreviews (uidSS, uidSP, rating, review) VALUES(%s, %s, %s, %s)"
 	values = (uidss, uidsp, rating, review)
 	mycursor.execute(query, values)
@@ -368,3 +433,104 @@ def getFavorites(uidss):
 	print(favorites)
 	return favorites
 
+
+def display_ip():
+    """  Function To Print GeoIP Latitude & Longitude """
+    ip_request = requests.get('https://get.geojs.io/v1/ip.json')
+    my_ip = ip_request.json()['ip']
+    print("func",my_ip)
+    geo_request = requests.get('https://get.geojs.io/v1/ip/geo/' +my_ip + '.json')
+    geo_data = geo_request.json()
+    return {'ip':my_ip, 'latitude': geo_data['latitude'], 'longitude': geo_data['longitude']}
+
+
+
+
+def send_email(user_email, userdetails, livelocation):
+	# lines to be changed 10, 11, 12, 15, 16
+	
+	attachments = []
+	username = 'yelopagesmail'
+	password = 'yelopages@dbms'
+	host = 'smtp.gmail.com:587' 
+
+	fromaddr = 'yelopagesmail@gmail.com' # less secure app allow karna padega
+	toaddr  = user_email
+	replyto = fromaddr
+
+	msgsubject = "Your Contact on yelopages is asking for HELP!"
+
+	htmlmsgtext = """<h2>Hi,</h2>"""
+	htmlmsgtext	= htmlmsgtext+"""<p>Your friend might be in trouble right now please take the appropriate steps to contact and help him/her:<br> """
+	htmlmsgtext=htmlmsgtext+"""<br></p><p><strong>Here are some contact and location details of your contact:</strong></p><p>"""+userdetails+"""<br><br>"""+livelocation+"""<br><br><b>TEAM YELOPAGES</b></p>"""
+
+	######### isse ne nechhe ke code se koi matlab nahi hai ############
+
+	class MLStripper(HTMLParser):
+	    def __init__(self):
+	        self.reset()
+	        self.convert_charrefs=True
+	        self.fed = []
+	    def handle_data(self, d):
+	        self.fed.append(d)
+	    def get_data(self):
+	        return ''.join(self.fed)
+
+	def strip_tags(html):
+	    s = MLStripper()
+	    s.feed(html)
+	    return s.get_data()
+
+	########################################################################
+
+	try:
+	    # Make text version from HTML - First convert tags that produce a line break to carriage returns
+	    msgtext = htmlmsgtext.replace('</br>',"\r").replace('<br />',"\r").replace('</p>',"\r")
+	    # Then strip all the other tags out
+	    msgtext = strip_tags(msgtext)
+
+	    # necessary mimey stuff
+	    msg = MIMEMultipart()
+	    msg.preamble = 'This is a multi-part message in MIME format.\n'
+	    msg.epilogue = ''
+
+	    body = MIMEMultipart('alternative')
+	    body.attach(MIMEText(msgtext))
+	    body.attach(MIMEText(htmlmsgtext, 'html'))
+	    msg.attach(body)
+	    #print('attachments' in globals())
+	    if len(attachments) > 0: # are there attachments?
+	        for filename in attachments:
+	            f = filename
+	            print(f)
+	            part = MIMEBase('application', "octet-stream")
+	            part.set_payload( open(f,"rb").read() )
+	            encoders.encode_base64(part)
+	            part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
+	            msg.attach(part)
+
+	    msg.add_header('From', fromaddr)
+	    msg.add_header('To', toaddr)
+	    msg.add_header('Subject', msgsubject)
+	    msg.add_header('Reply-To', replyto)
+
+	    # The actual email sendy bits
+	    server = smtplib.SMTP(host)
+	    server.set_debuglevel(False) # set to True for verbose output
+	    try:
+	        # gmail expect tls
+	        server.starttls()
+	        server.login(username,password)
+	        server.sendmail(msg['From'], [msg['To']], msg.as_string())
+	        print('Email sent')
+	        server.quit() # bye bye
+	    except:
+	        # if tls is set for non-tls servers you would have raised an exception, so....
+	        server.login(username,password)
+	        server.sendmail(msg['From'], [msg['To']], msg.as_string())
+	        print('Email sent')
+	        server.quit() # sbye bye        
+	except:
+	    print ('Email NOT sent to %s successfully. %s ERR: %s %s %s ', str(toaddr), 'tete', str(sys.exc_info()[0]), str(sys.exc_info()[1]), str(sys.exc_info()[2]) )
+	    #just in case
+#This email sending script was taken from an open source github repo. 

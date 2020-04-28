@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block content %}		
+{% block content %}
 
 <div class="row" style="margin-top: 30px;">
 	<form method="POST">
@@ -58,11 +58,12 @@
 
 			<div class="col-md" style="padding: 5px 20px 5px 20px;">
 				<select class="custom-select mr-sm-2 text-black form-control" name="Rating">
-				    <option selected value = "All" >Minimum Rating</option>				  	
+				    <option selected value = "All" >Minimum Rating</option>
+				    <option value = "1">Atleast 1</option>				    	
 				    <option value = "2">Atleast 2</option>
 				    <option value = "3">Atleast 3</option>
 				    <option value = "4">Atleast 4</option>
-				    <option value = "5">Atleast 5</option>
+				    <option value = "5">Equals to 5</option>
 				</select>	
 			</div>
 			<div class="col-md" style="padding: 5px 20px 5px 20px;">
@@ -80,7 +81,7 @@
 	</form>
 </div>
 <hr class="bg-dark" style="margin-top: 40px; border-width: 3px;">
-
+<h5 style="color: white;">Total Results: {{ totalresults }}</h5>
 
 {% for i in serviceproviders %}
 <div class="container" style="margin-top: 40px; width: 90%; background-color: rgba(52, 58, 64, 0.8); border-radius: 15px; padding: 20px 40px 20px 40px; color: #fff; border: 3px solid #ffc107;">

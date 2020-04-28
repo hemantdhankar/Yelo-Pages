@@ -68,7 +68,8 @@ def search(request):
 			if(sorting=='nil'):
 				sorting=None
 			serviceProviders = getserviceproviders(profession, locality[0], pincode[0], rating, sorting)
-			return render(request, "search.html", {'user': request.session['user'],'localities':request.session['localities'], 'pincodes':request.session['pincodes'], 'serviceproviders':serviceProviders})
+			totalresults = len(serviceProviders)
+			return render(request, "search.html", {'user': request.session['user'],'localities':request.session['localities'], 'pincodes':request.session['pincodes'], 'serviceproviders':serviceProviders, 'totalresults':totalresults})
 		else:
 			spid = request.POST['spid']
 			return redirect('/serviceprovider/'+spid)
@@ -76,7 +77,8 @@ def search(request):
 	else:
 		user = request.session["user"]
 		serviceProviders = getserviceproviders()
-		return render(request,"search.html", {'user':user,'localities':request.session['localities'], 'pincodes':request.session['pincodes'], 'serviceproviders':serviceProviders})
+		totalresults = len(serviceProviders)
+		return render(request,"search.html", {'user':user,'localities':request.session['localities'], 'pincodes':request.session['pincodes'], 'serviceproviders':serviceProviders, 'totalresults': totalresults})
 
 
 def completeprofile(request):
@@ -93,8 +95,24 @@ def completeprofile(request):
 		return render(request,"completeprofile.html", {'localities':request.session['localities'], 'pincodes':request.session['pincodes']})
 
 def profile(request):
-	rating = getAverageRating(request.session['user']['Uid'])
-	return render(request, "profile.html", {'user': request.session['user'], 'rating': rating})
+	if(request.method=='POST'):
+		if 'save' in request.POST:
+			email1 = request.POST['Email1']
+			email2 = request.POST['Email2']
+			email3 = request.POST['Email3']
+		if(email1):
+			addSOS(request.session['user']['Uid'], email1)
+		if(email2):
+			addSOS(request.session['user']['Uid'], email2)
+		if(email3):
+			addSOS(request.session['user']['Uid'], email3)
+		rating = getAverageRating(request.session['user']['Uid'])
+		emails = getSOSEmails(request.session['user']['Uid'])
+		return render(request, "profile.html", {'user': request.session['user'], 'rating': rating, 'emailadded': 1,'emails':emails})
+	else:
+		rating = getAverageRating(request.session['user']['Uid'])
+		emails = getSOSEmails(request.session['user']['Uid'])
+		return render(request, "profile.html", {'user': request.session['user'], 'rating': rating, 'emails':emails})
 
 
 def favorites(request):
@@ -122,8 +140,17 @@ def serviceprovider(request, spid):
 			review = request.POST['Review']
 			check = giveReview(request.session['user']['Uid'], spid, rating, review)
 			spuser = getUserObject(spid)
+			rating = getAverageRating(spid)
 			reviews = getRatingsAndReviews(spid)
-			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'check':check})
+			print(check)
+			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'check':check,'rating':rating})
+		elif 'report' in request.POST:
+			complaint = request.POST['Complaint']
+			submitComplaint(request.session['user']['Uid'], spid, complaint)
+			spuser = getUserObject(spid)
+			rating = getAverageRating(spid)
+			reviews = getRatingsAndReviews(spid)
+			return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews,'rating':rating, 'message': 'Complaint sent successfully'})
 	else:
 		spuser = getUserObject(spid)
 		print(spuser)
@@ -133,4 +160,14 @@ def serviceprovider(request, spid):
 		favorite = isFavorite(request.session['user']['Uid'], spid)
 		return render(request, "ServiceProvider.html", {'user' :request.session['user'], 'spuser': spuser, 'exceptions':['Uid', 'Username', 'Aadhar', 'ServiceProvider', 'Rating'], 'reviews': reviews, 'favorite':favorite, 'rating':rating})
 
-#[18:11, 4/18/2020] IIITD Sonali Singhal CSD: Name profession  phonenumber rating Location
+def sos(request):
+	emails = getSOSEmails(request.session['user']['Uid'])
+	message=""
+	if(len(emails) == 0):
+		message = "no email"
+	else:
+		userdetails = str(request.session['user'])
+		livelocation = str(display_ip())
+		for emailid in emails:
+			send_email(emailid, userdetails, livelocation)
+	return render(request, "sos.html", {'user': request.session['user'],'emails':emails, 'message':message})
