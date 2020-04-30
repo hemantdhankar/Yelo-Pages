@@ -323,6 +323,19 @@ def check_username(username):
 	else:
 		return False
 
+def checkLocalityPin(locality, pincode):
+	mydb = setupdb()
+	mycursor= mydb.cursor()
+	mycursor.execute("USE yelopagesyat")
+	query="SELECT * from location where locality = '{}' and pin = '{}'".format(locality, pincode)
+	mycursor.execute(query)
+	exist=mycursor.fetchall()
+	if(len(exist)==0):
+		return False
+	else:
+		return True
+
+
 def login(username, password):
 	mydb = setupdb()
 	mycursor= mydb.cursor()

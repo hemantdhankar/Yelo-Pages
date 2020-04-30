@@ -8,7 +8,10 @@
 			<h3>Sign up Successfull!</h3>
 			<hr class="bg-warning" style="border-width: 3px;">
 			<h6> ( Enter your contact details to complete your profile ) </h6>
-			<br><br>
+			<br>
+			{% if error %}
+				<p style="color: red;">{{ error }}</p>
+			{% endif %}			
 			<form method="POST">
 				{% csrf_token %}
 				<div class="form-row">

@@ -25,17 +25,16 @@
 				<span class="navbar-toggler-icon"></span>
 			  </button>
 			  <div class="collapse navbar-collapse px-5" id="navbarCollapse">
-				<ul class="navbar-nav ml-auto">
-						<li style="margin-right: 380px; border: 3px solid red; border-radius: 8px; background-color: black;">
+				<ul class="navbar-nav ml-auto">			
+					{% if user.Username %}
+						<li style="margin-right: 30px; border: 3px solid red; border-radius: 8px; background-color: black;">
 						  	<a class="btn btn-dark" href="http://localhost:8000/sos/" role="button" style="padding-top:3px;padding-bottom: 3px; color: red;">
 						    SOS
 						  	</a>
-						 </li>>
-			
-					{% if user.Username %}
-					<li class="nav-item active">
-						<a class="nav-link" href="http://localhost:8000/search/">Home <span class="sr-only">(current)</span></a>
-					</li>
+						</li>>
+						<li class="nav-item active">
+							<a class="nav-link" href="http://localhost:8000/search/">Home <span class="sr-only">(current)</span></a>
+						</li>
 					{% endif %}
 				  {% if user.Username %}
 						<div class="dropdown show" style="margin-left:30px; border: 3px solid #ffc107; border-radius: 8px; background-color: black;">

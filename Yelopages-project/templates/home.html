@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}		
 {% load staticfiles %}
-<div class="row h-100" style="margin-top: 30px;">
-	<div class="col-md-6 text-black" style="border-radius: 20px; border: solid 3px rgb(0,0,0);">
-		<div style="top: 25%; left: 20%; position: absolute; text-align: center;">
+<div class="row" style="margin-top: 30px;">
+	<div class="col-md text-black" style="border-radius: 20px; border: solid 3px rgb(0,0,0);">
+		<div style="left: 20%; text-align: center; margin-top: 30%;">
 			<img src="{% static 'Resources/img/logo.png'%}" style="width: 230px;">
 			<br><br>
 			<h2>Services on your Screen</h2>			
 		</div>
 	</div>
-	<div class="col-md-6">
+	<br>
+	<div class="col-md">
+		<br>
 		<div class="col bg-dark text-white" style="border-radius: 20px;padding: 20px;box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
 			<h5>Log in to Continue</h5>
 			<hr class="bg-warning" style="border-width: 2px;">
@@ -32,6 +34,9 @@
 		<div class="col bg-light" style="border-radius: 20px;padding: 20px;box-shadow: 5px 7px rgba(0, 0, 0, 0.15);">
 			<h5>Don't have an account? Sign Up Now.</h5>
 			<hr class="bg-dark" style="border-width: 2px;">
+					  {% if usernameerror %}
+					  <p style="color: red; font-size: 10px;margin-top: 20px;">{{ usernameerror }}</p>
+					  {% endif %}			  		
 			<form method="POST">
 				{% csrf_token %}
 				<div class="form-group">
@@ -41,9 +46,6 @@
 					<div class="col">
 						<input type="text" class="form-control" {% if susername %} value = {{ susername }} {% endif %} placeholder="Username" name="Username" required>
 					</div>
-					  {% if usernameerror %}
-					  <p style="color: red; font-size: 10px;margin-top: 20px;">{{ usernameerror }}</p>
-					  {% endif %}			  		
 					<div class="col">
 						<input type="password" class="form-control" placeholder="Password" name="Password" required>
 					</div>
