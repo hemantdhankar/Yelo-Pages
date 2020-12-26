@@ -25,3 +25,4 @@ Changes you have to do:
 #extra
 I've updated the professioncategory table (added pid 0 for profession 'None')
 The exported schema is given in the root folder so you can import it.
+

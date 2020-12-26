@@ -464,7 +464,7 @@ def send_email(user_email, userdetails, livelocation):
 	
 	attachments = []
 	username = 'yelopagesmail'
-	password = 'yelopages@dbms'
+	password = 'serviceprovider'
 	host = 'smtp.gmail.com:587' 
 
 	fromaddr = 'yelopagesmail@gmail.com' # less secure app allow karna padega
